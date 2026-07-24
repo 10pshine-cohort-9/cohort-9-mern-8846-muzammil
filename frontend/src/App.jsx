@@ -1,5 +1,10 @@
 import './App.css'
 
+/**
+ * Renders the main application view for the note-taking experience.
+ *
+ * @returns {JSX.Element} The rendered React element for the app shell.
+ */
 function App() {
   
 
