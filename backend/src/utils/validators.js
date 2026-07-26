@@ -1,46 +1,18 @@
-/**
- * Validate registration input for username, email, and password requirements.
- *
- * @param {object} data - Request payload.
- * @returns {string[]} List of validation errors.
- */
-const registerSchema = (data) => {
-  const errors = [];
-
-  if (!data.username || data.username.trim().length < 3) {
-    errors.push('Username must be at least 3 characters long');
-  }
-
-  if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push('Please provide a valid email address');
-  }
-
-  if (!data.password || data.password.length < 6) {
-    errors.push('Password must be at least 6 characters long');
-  }
-
-  return errors;
-};
+const { z } = require('zod');
 
 /**
- * Validate login input for email and password requirements.
- *
- * @param {object} data - Request payload.
- * @returns {string[]} List of validation errors.
+ * Zod schemas for auth request validation.
  */
-const loginSchema = (data) => {
-  const errors = [];
+const registerSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters long').transform((s) => s.trim()),
+  email: z.string().email('Please provide a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
+});
 
-  if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push('Please provide a valid email address');
-  }
-
-  if (!data.password || data.password.length < 6) {
-    errors.push('Password must be at least 6 characters long');
-  }
-
-  return errors;
-};
+const loginSchema = z.object({
+  email: z.string().email('Please provide a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
+});
 
 module.exports = {
   registerSchema,
