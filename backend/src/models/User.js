@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+/**
+ * Mongoose schema for storing authenticated user accounts.
+ */
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -25,4 +28,4 @@ const userSchema = new mongoose.Schema({
         timestamps: true,
     });
 
-module.exports=mongoose.model('User',userSchema);
+module.exports = mongoose.model('User', userSchema);
