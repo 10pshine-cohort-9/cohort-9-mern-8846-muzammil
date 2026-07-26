@@ -11,24 +11,24 @@ const {
 describe('Notes service', () => {
   let originalCreate;
   let originalFind;
-  let originalFindById;
-  let originalFindByIdAndUpdate;
-  let originalFindByIdAndDelete;
+  let originalFindOne;
+  let originalFindOneAndUpdate;
+  let originalFindOneAndDelete;
 
   beforeEach(() => {
     originalCreate = Note.create;
     originalFind = Note.find;
-    originalFindById = Note.findById;
-    originalFindByIdAndUpdate = Note.findByIdAndUpdate;
-    originalFindByIdAndDelete = Note.findByIdAndDelete;
+    originalFindOne = Note.findOne;
+    originalFindOneAndUpdate = Note.findOneAndUpdate;
+    originalFindOneAndDelete = Note.findOneAndDelete;
   });
 
   afterEach(() => {
     Note.create = originalCreate;
     Note.find = originalFind;
-    Note.findById = originalFindById;
-    Note.findByIdAndUpdate = originalFindByIdAndUpdate;
-    Note.findByIdAndDelete = originalFindByIdAndDelete;
+    Note.findOne = originalFindOne;
+    Note.findOneAndUpdate = originalFindOneAndUpdate;
+    Note.findOneAndDelete = originalFindOneAndDelete;
   });
 
   it('creates a note for the authenticated user', async () => {
@@ -69,7 +69,7 @@ describe('Notes service', () => {
   });
 
   it('throws a not-found error when a note does not exist', async () => {
-    Note.findById = async () => null;
+    Note.findOne = async () => null;
 
     try {
       await getNoteById('missing-id', 'user-1');
@@ -91,14 +91,14 @@ describe('Notes service', () => {
       },
     };
 
-    Note.findById = async () => note;
+    Note.findOneAndUpdate = async () => null;
 
     try {
       await updateNote('note-1', 'user-1', { title: 'Updated' });
       throw new Error('Expected updateNote to throw');
     } catch (error) {
-      expect(error.statusCode).to.equal(403);
-      expect(error.message).to.equal('You are not authorized to update this note');
+      expect(error.statusCode).to.equal(404);
+      expect(error.message).to.equal('Note not found or not authorized');
     }
   });
 });
