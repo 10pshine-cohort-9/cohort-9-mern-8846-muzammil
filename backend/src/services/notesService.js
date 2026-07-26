@@ -1,18 +1,6 @@
 const Note = require('../models/Note');
 const logger = require('../config/logger');
-
-/**
- * Create a structured error with an optional HTTP status code.
- *
- * @param {string} message - Error message.
- * @param {number} [statusCode=500] - HTTP status code.
- * @returns {Error & { statusCode: number }} Error instance.
- */
-const createError = (message, statusCode = 500) => {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  return error;
-};
+const AppError = require('../utils/AppError');
 
 /**
  * Create a new note for the authenticated user.
@@ -44,16 +32,13 @@ const getUserNotes = async (userId) => {
  * @returns {Promise<object>} Note document.
  */
 const getNoteById = async (noteId, userId) => {
-  const note = await Note.findById(noteId);
+  const note = await Note.findOne({ _id: noteId, userId });
 
   if (!note) {
-    throw createError('Note not found', 404);
+    throw new AppError('Note not found', 404);
   }
 
-  if (note.userId.toString() !== userId.toString()) {
-    throw createError('You are not authorized to access this note', 403);
-  }
-
+  logger.info({ userId, noteId }, 'Note retrieved');
   return note;
 };
 
@@ -66,27 +51,18 @@ const getNoteById = async (noteId, userId) => {
  * @returns {Promise<object>} Updated note document.
  */
 const updateNote = async (noteId, userId, updates) => {
-  const note = await Note.findById(noteId);
+  const note = await Note.findOneAndUpdate(
+    { _id: noteId, userId },
+    { $set: updates },
+    { new: true }
+  );
 
   if (!note) {
-    throw createError('Note not found', 404);
+    throw new AppError('Note not found or not authorized', 404);
   }
 
-  if (note.userId.toString() !== userId.toString()) {
-    throw createError('You are not authorized to update this note', 403);
-  }
-
-  if (updates.title !== undefined) {
-    note.title = updates.title;
-  }
-
-  if (updates.content !== undefined) {
-    note.content = updates.content;
-  }
-
-  const updatedNote = await note.save();
   logger.info({ userId, noteId }, 'Note updated');
-  return updatedNote;
+  return note;
 };
 
 /**
@@ -97,19 +73,14 @@ const updateNote = async (noteId, userId, updates) => {
  * @returns {Promise<object>} Deleted note document.
  */
 const deleteNote = async (noteId, userId) => {
-  const note = await Note.findById(noteId);
+  const note = await Note.findOneAndDelete({ _id: noteId, userId });
 
   if (!note) {
-    throw createError('Note not found', 404);
+    throw new AppError('Note not found or not authorized', 404);
   }
 
-  if (note.userId.toString() !== userId.toString()) {
-    throw createError('You are not authorized to delete this note', 403);
-  }
-
-  const deletedNote = await Note.findByIdAndDelete(noteId);
   logger.info({ userId, noteId }, 'Note deleted');
-  return deletedNote;
+  return note;
 };
 
 module.exports = {
