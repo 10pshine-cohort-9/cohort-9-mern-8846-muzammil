@@ -2,6 +2,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../config/logger');
 
+/**
+ * Protect routes by requiring a valid bearer token and attaching the authenticated user to the request.
+ *
+ * @param {import('express').Request} req - HTTP request.
+ * @param {import('express').Response} res - HTTP response.
+ * @param {import('express').NextFunction} next - Express next callback.
+ * @returns {Promise<void>}
+ */
 const protect = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;

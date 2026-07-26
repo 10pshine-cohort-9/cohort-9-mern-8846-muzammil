@@ -1,11 +1,15 @@
+/**
+ * Validate registration input for username, email, and password requirements.
+ *
+ * @param {object} data - Request payload.
+ * @returns {string[]} List of validation errors.
+ */
 const registerSchema = (data) => {
   const errors = [];
 
   if (!data.username || data.username.trim().length < 3) {
     errors.push('Username must be at least 3 characters long');
   }
-
-  // these are the regex regular expression for vaidating the email address
 
   if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
     errors.push('Please provide a valid email address');
@@ -18,6 +22,12 @@ const registerSchema = (data) => {
   return errors;
 };
 
+/**
+ * Validate login input for email and password requirements.
+ *
+ * @param {object} data - Request payload.
+ * @returns {string[]} List of validation errors.
+ */
 const loginSchema = (data) => {
   const errors = [];
 
