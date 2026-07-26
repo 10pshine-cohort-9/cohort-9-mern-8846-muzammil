@@ -6,6 +6,14 @@ const logger = require('./config/logger');
 
 const PORT = process.env.PORT || 5000;
 
-connectDB();
+/**
+ * Start the API server after connecting to MongoDB.
+ *
+ * @returns {void}
+ */
+const startServer = () => {
+  connectDB();
+  app.listen(PORT, () => logger.info(`Server is Running at Port ${PORT}`));
+};
 
-app.listen(PORT, () => logger.info(`Server is Running at Port ${PORT}`));
+startServer();
