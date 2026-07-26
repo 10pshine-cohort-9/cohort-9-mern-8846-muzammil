@@ -12,16 +12,35 @@ app.use(helmet());
 
 app.use('/api/auth', authRoutes);
 
-app.use((req, res) => {
+/**
+ * Respond with a 404 payload for unknown routes.
+ *
+ * @param {import('express').Request} req - HTTP request.
+ * @param {import('express').Response} res - HTTP response.
+ * @returns {void}
+ */
+const notFoundHandler = (req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
-});
+};
 
-app.use((err, req, res, next) => {
+/**
+ * Forward unexpected errors to the response layer with a consistent payload.
+ *
+ * @param {Error & { statusCode?: number }} err - Error object.
+ * @param {import('express').Request} req - HTTP request.
+ * @param {import('express').Response} res - HTTP response.
+ * @param {import('express').NextFunction} next - Express next callback.
+ * @returns {void}
+ */
+const errorHandler = (err, req, res, next) => {
   logger.error({ err: err.message, stack: err.stack }, 'Server error');
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || 'Internal server error',
   });
-});
+};
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;

@@ -3,12 +3,25 @@ const User = require('../models/User');
 const logger = require('../config/logger');
 const { generateAccessToken, generateRefreshToken } = require('../utils/generateToken');
 
+/**
+ * Create a structured error with an optional HTTP status code.
+ *
+ * @param {string} message - Error message.
+ * @param {number} [statusCode=500] - HTTP status code.
+ * @returns {Error & { statusCode: number }} Error instance.
+ */
 const createError = (message, statusCode = 500) => {
   const error = new Error(message);
   error.statusCode = statusCode;
   return error;
 };
 
+/**
+ * Register a new user and issue authentication tokens.
+ *
+ * @param {{ username: string, email: string, password: string }} credentials - User registration fields.
+ * @returns {Promise<object>} Registration payload.
+ */
 const registerUser = async ({ username, email, password }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -39,6 +52,12 @@ const registerUser = async ({ username, email, password }) => {
   };
 };
 
+/**
+ * Authenticate an existing user and issue a new token pair.
+ *
+ * @param {{ email: string, password: string }} credentials - User login fields.
+ * @returns {Promise<object>} Login payload.
+ */
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -68,11 +87,23 @@ const loginUser = async ({ email, password }) => {
   };
 };
 
+/**
+ * Return a logout success message for the current authenticated user.
+ *
+ * @param {string} userId - Authenticated user identifier.
+ * @returns {Promise<{ message: string }>} Logout response payload.
+ */
 const logoutUser = async (userId) => {
   logger.info({ userId }, 'User logout');
   return { message: 'Logout successful' };
 };
 
+/**
+ * Return the current user profile payload.
+ *
+ * @param {object} user - Authenticated user document.
+ * @returns {Promise<{ user: object }>} Current user payload.
+ */
 const getCurrentUserProfile = async (user) => {
   return { user };
 };
