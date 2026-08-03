@@ -8,7 +8,9 @@ const logger = require('../config/logger');
  */
 const validateRequest = (schema) => (req, res, next) => {
   if (!schema || typeof schema.safeParse !== 'function') {
-    return next();
+    const error = new Error('Server misconfiguration: invalid validation schema');
+    error.statusCode = 500;
+    return next(error);
   }
 
   const target = req.method === 'GET' || req.method === 'DELETE' ? req.params : req.body;

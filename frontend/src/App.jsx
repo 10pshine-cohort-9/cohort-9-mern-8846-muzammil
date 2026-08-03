@@ -3,7 +3,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 
 function App() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('accessToken');
 
   return (
     <BrowserRouter>
